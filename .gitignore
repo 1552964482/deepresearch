@@ -36,6 +36,9 @@ experiments/results/**/*.db
 .vscode/
 .kiro/
 
+# Private notes (interview prep etc.) — keep local only
+INTERVIEW_QA.md
+
 # Streamlit
 .streamlit/secrets.toml
 
