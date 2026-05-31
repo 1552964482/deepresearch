@@ -11,8 +11,8 @@
 ## Install
 
 ```bash
-git clone https://github.com/<you>/deepresearch-multiagent.git
-cd deepresearch-multiagent
+git clone https://github.com/1552964482/deepresearch.git
+cd deepresearch
 
 pip install -e .
 pip install \

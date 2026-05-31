@@ -88,7 +88,7 @@ class Fetcher:
             headers={
                 "User-Agent": (
                     "Mozilla/5.0 (compatible; dr-agent/0.1; "
-                    "+https://github.com/local/deepresearch-multiagent)"
+                    "+https://github.com/1552964482/deepresearch)"
                 )
             },
         )
