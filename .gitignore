@@ -34,7 +34,7 @@ experiments/results/**/*.db
 # IDE
 .idea/
 .vscode/
-.kiro/cache/
+.kiro/
 
 # Streamlit
 .streamlit/secrets.toml

@@ -11,9 +11,9 @@ DeepResearch-MultiAgent 采用分层架构：CLI/UI 入口 → Orchestrator（DA
 - **Judge 强制走独立模型族**：避免 self-preference bias，是评测体系的合法性基础
 - **状态机与 DAG 分层**：DAG 描述节点依赖与并发，状态机描述单个研究任务的生命周期，二者互不耦合
 
-## Steering Documents Alignment
+## Coding Standards Alignment
 
-工作区目前无 `.kiro/steering/*.md` 文件，本设计无需对齐已有 steering。后续若需添加项目级编码规范（如 async 风格、错误处理约定），可在 `.kiro/steering/` 下新增。
+项目级编码规范（async 风格、错误处理约定、模块边界）记录在 `docs/` 下的设计与架构文档中。本设计与之保持一致。
 
 ## Architecture
 
@@ -123,7 +123,7 @@ deepresearch-multiagent/
 ├── pyproject.toml
 ├── README.md
 ├── .env (用户已提供)
-├── .kiro/specs/deepresearch-multiagent/
+├── docs/spec/
 │   ├── requirements.md
 │   ├── design.md
 │   └── tasks.md
