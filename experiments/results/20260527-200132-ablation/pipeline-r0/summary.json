@@ -1,0 +1,57 @@
+{
+  "backend": "mimo",
+  "mode": "pipeline",
+  "n_samples": 3,
+  "n_failed": 0,
+  "metrics_mean": {
+    "factual_accuracy": 1.0,
+    "hallucination_rate": 0.10914126016260163,
+    "citation_coverage": 0.3558282520325203
+  },
+  "metrics_ci95": {
+    "factual_accuracy": [
+      1.0,
+      1.0
+    ],
+    "hallucination_rate": [
+      0.0030487804878048786,
+      0.1779166666666667
+    ],
+    "citation_coverage": [
+      0.35060975609756095,
+      0.35874999999999996
+    ]
+  },
+  "judge_overall_mean": 4.79,
+  "judge_overall_ci95": [
+    4.65,
+    4.863333333333333
+  ],
+  "by_domain": {
+    "ai-ml-fundamentals": {
+      "n": 1,
+      "factual_accuracy": 1.0,
+      "hallucination_rate": 0.209375,
+      "citation_coverage": 0.359375,
+      "judge_overall": 4.65
+    },
+    "rl-algorithms": {
+      "n": 1,
+      "factual_accuracy": 1.0,
+      "hallucination_rate": 0.003048780487804878,
+      "citation_coverage": 0.35060975609756095,
+      "judge_overall": 4.85
+    },
+    "software-engineering": {
+      "n": 1,
+      "factual_accuracy": 1.0,
+      "hallucination_rate": 0.115,
+      "citation_coverage": 0.3575,
+      "judge_overall": 4.87
+    }
+  },
+  "judge_backends": {
+    "mimo-fallback": 3
+  },
+  "n_self_bias_risk": 3
+}

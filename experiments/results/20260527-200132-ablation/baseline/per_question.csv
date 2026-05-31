@@ -1,0 +1,4 @@
+id,domain,backend,mode,factual_accuracy,hallucination_rate,citation_coverage,n_facts_total,n_facts_hit,n_sentences_total,judge_backend,judge_self_bias_risk,judge_overall,judge_accuracy,judge_completeness,judge_logic,judge_citation,judge_readability,elapsed_s,error
+rb-001,ai-ml-fundamentals,mimo,baseline,1.0000,0.2500,0.0000,7,7,36,mimo-fallback,1,4.660,4.900,4.750,4.850,4.000,4.800,109.97,
+rb-008,rl-algorithms,mimo,baseline,0.0000,0.0000,0.0000,6,0,0,,,,,,,,,180.14,"LLMUnavailable(""all keys exhausted after 3 attempts; last_error=LLMTransient('timeout: ')"")"
+rb-014,software-engineering,mimo,baseline,1.0000,0.0702,0.0000,7,7,57,mimo-fallback,1,4.130,4.400,4.750,4.750,2.000,4.750,57.00,

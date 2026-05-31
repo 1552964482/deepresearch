@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DeepResearch-MultiAgent · 技术报告</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #171a21;
+    --panel2: #1d212b;
+    --border: #2a2f3a;
+    --text: #d7dce5;
+    --muted: #8b93a3;
+    --accent: #5b9dff;
+    --accent2: #7ee0c2;
+    --warn: #ffb454;
+    --bad: #ff6b6b;
+    --good: #4ec9a8;
+    --code-bg: #0c0e12;
+    --maxw: 1080px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    line-height: 1.7;
+    font-size: 15px;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* layout */
+  .wrap { display: flex; }
+  nav.toc {
+    position: sticky; top: 0; align-self: flex-start;
+    width: 280px; min-width: 280px; height: 100vh; overflow-y: auto;
+    background: var(--panel); border-right: 1px solid var(--border);
+    padding: 24px 18px;
+  }
+  nav.toc h2 {
+    font-size: 15px; color: var(--accent2); margin: 0 0 6px;
+    letter-spacing: .5px;
+  }
+  nav.toc .sub { color: var(--muted); font-size: 12px; margin-bottom: 18px; }
+  nav.toc ol { list-style: none; padding: 0; margin: 0; counter-reset: nav; }
+  nav.toc ol li { margin: 2px 0; }
+  nav.toc ol li a {
+    display: block; padding: 5px 10px; border-radius: 6px;
+    color: var(--text); font-size: 13.5px;
+  }
+  nav.toc ol li a:hover { background: var(--panel2); text-decoration: none; }
+  nav.toc ol li a.active { background: #243049; color: #fff; }
+  nav.toc ol li.indent a { padding-left: 24px; color: var(--muted); font-size: 12.5px; }
+
+  main { flex: 1; min-width: 0; padding: 0 0 120px; }
+  .inner { max-width: var(--maxw); margin: 0 auto; padding: 0 40px; }
+
+  header.hero {
+    padding: 60px 40px 40px; border-bottom: 1px solid var(--border);
+    background: linear-gradient(160deg, #1a2031 0%, #0f1115 70%);
+  }
+  header.hero .inner { padding: 0; max-width: var(--maxw); margin: 0 auto; }
+  header.hero h1 { font-size: 34px; margin: 0 0 10px; color: #fff; }
+  header.hero .tagline { font-size: 17px; color: var(--muted); margin: 0 0 22px; }
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; }
+  .badge {
+    background: var(--panel2); border: 1px solid var(--border);
+    color: var(--accent2); padding: 4px 11px; border-radius: 20px; font-size: 12.5px;
+    font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  }
+
+  section { padding-top: 46px; margin-top: -20px; }
+  h2.sec {
+    font-size: 25px; color: #fff; margin: 0 0 6px;
+    padding-bottom: 8px; border-bottom: 2px solid var(--accent);
+    display: inline-block;
+  }
+  h3 { font-size: 19px; color: var(--accent2); margin: 32px 0 10px; }
+  h4 { font-size: 16px; color: #fff; margin: 22px 0 8px; }
+  p { margin: 10px 0; }
+  ul, ol { padding-left: 22px; }
+  li { margin: 4px 0; }
+  .lead { font-size: 16px; color: var(--text); }
+  .muted { color: var(--muted); }
+
+  /* cards */
+  .grid { display: grid; gap: 14px; margin: 16px 0; }
+  .grid.c2 { grid-template-columns: 1fr 1fr; }
+  .grid.c3 { grid-template-columns: repeat(3, 1fr); }
+  .grid.c4 { grid-template-columns: repeat(4, 1fr); }
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 18px;
+  }
+  .card h4 { margin-top: 0; }
+  .card .k { color: var(--accent); font-family: ui-monospace, monospace; font-size: 13px; }
+  .stat { text-align: center; }
+  .stat .num { font-size: 30px; font-weight: 700; color: var(--accent2); }
+  .stat .lbl { color: var(--muted); font-size: 13px; }
+
+  /* code */
+  pre {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px 16px; overflow-x: auto;
+    font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    font-size: 13px; line-height: 1.55; color: #c8d3e0;
+  }
+  code.inline {
+    background: var(--panel2); border: 1px solid var(--border);
+    padding: 1px 6px; border-radius: 5px; font-size: 12.8px;
+    font-family: ui-monospace, monospace; color: var(--accent2);
+  }
+  .cmt { color: #6b7689; }
+  .kw { color: #c586c0; }
+  .str { color: #ce9178; }
+  .fn { color: #dcdcaa; }
+  .num2 { color: #b5cea8; }
+
+  /* tables */
+  table {
+    width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13.5px;
+    background: var(--panel); border-radius: 8px; overflow: hidden;
+  }
+  th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: var(--panel2); color: var(--accent2); font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  td.good { color: var(--good); font-weight: 600; }
+  td.bad { color: var(--bad); }
+  td.warn { color: var(--warn); }
+  td.mono, .mono { font-family: ui-monospace, monospace; }
+
+  .callout {
+    border-left: 3px solid var(--accent); background: var(--panel);
+    padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0;
+  }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout.bad { border-left-color: var(--bad); }
+  .callout.good { border-left-color: var(--good); }
+  .callout .tag { font-weight: 700; font-size: 12px; letter-spacing: .5px; text-transform: uppercase; }
+  .callout.warn .tag { color: var(--warn); }
+  .callout.bad .tag { color: var(--bad); }
+  .callout.good .tag { color: var(--good); }
+  .callout.warn .tag, .callout .tag { color: var(--accent); }
+
+  .mermaid { background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px; margin: 18px 0; text-align: center; }
+
+  /* bar chart */
+  .bars { margin: 14px 0; }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+  .bar-row .name { width: 130px; font-size: 13px; color: var(--muted); text-align: right; }
+  .bar-track { flex: 1; background: var(--panel2); border-radius: 6px; height: 24px; position: relative; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center;
+    padding-left: 8px; font-size: 12px; color: #04121d; font-weight: 700; white-space: nowrap;}
+  .pill { display:inline-block; padding:1px 8px; border-radius:12px; font-size:11.5px; font-weight:600; }
+  .pill.huge { background:#13402f; color:var(--good);}
+  .pill.med { background:#143052; color:var(--accent);}
+  .pill.small { background:#3a3320; color:var(--warn);}
+  .pill.neg { background:#3a2222; color:var(--bad);}
+
+  footer { border-top: 1px solid var(--border); margin-top: 60px; padding: 28px 0;
+    color: var(--muted); font-size: 13px; text-align: center; }
+
+  @media (max-width: 900px) {
+    nav.toc { display: none; }
+    .inner { padding: 0 20px; }
+    .grid.c2, .grid.c3, .grid.c4 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="toc">
+  <h2>DeepResearch-MultiAgent</h2>
+  <div class="sub">技术报告 · v0.1</div>
+  <ol id="tocList">
+    <li><a href="#overview">1 · 项目概览</a></li>
+    <li><a href="#arch">2 · 系统架构</a></li>
+    <li><a href="#stack">3 · 技术栈</a></li>
+    <li><a href="#gateway">4 · LLM 网关 MimoPool</a></li>
+    <li><a href="#judge">5 · 独立 Judge 与降级</a></li>
+    <li><a href="#orchestrator">6 · 编排：状态机 + DAG</a></li>
+    <li><a href="#degrade">7 · 三级降级策略</a></li>
+    <li><a href="#agents">8 · Agent 流水线</a></li>
+    <li><a href="#deepdive">8b · 递归深挖</a></li>
+    <li><a href="#compress">9 · 三级语义压缩</a></li>
+    <li><a href="#memory">10 · 共享记忆</a></li>
+    <li><a href="#redblue">11 · Red-Blue 对抗</a></li>
+    <li><a href="#multicritic">11b · Multi-Critic 多评审</a></li>
+    <li><a href="#json">12 · 三层 JSON Fallback</a></li>
+    <li><a href="#eval">13 · 评测体系</a></li>
+    <li><a href="#results">14 · 实验结果</a></li>
+    <li><a href="#story">15 · 翻车与修复</a></li>
+    <li><a href="#tests">16 · 测试与复现</a></li>
+  </ol>
+</nav>
+<main>
+<header class="hero">
+  <div class="inner">
+    <h1>DeepResearch-MultiAgent</h1>
+    <p class="tagline">面向复杂研究任务的多智能体协作系统 —— 在弱基座 LLM 上通过工程化 Agent 编排产出可追溯、带引用、可量化评测的研究报告</p>
+    <div class="badges">
+      <span class="badge">Python 3.11+ · asyncio</span>
+      <span class="badge">mimo-v2.5-pro × 4 keys</span>
+      <span class="badge">Judge: GPT-5.4 (独立)</span>
+      <span class="badge">bge-small-zh · SQLite 向量</span>
+      <span class="badge">Tavily 检索</span>
+      <span class="badge">65 单元测试</span>
+    </div>
+  </div>
+</header>
+<div class="inner">
+
+<!-- ============ 1. 概览 ============ -->
+<section id="overview">
+  <h2 class="sec">1 · 项目概览</h2>
+  <p class="lead">给定一个研究问题（如「RAG 检索增强生成的核心流程与常见优化手段」），系统自动完成
+  <b>规划 → 检索 → 阅读压缩 → 写作 → Red-Blue 对抗评审</b>的全链路协作，输出一份带引用、结构化、
+  并经过自动化评测的研究报告。</p>
+
+  <h3>要解决的三个痛点</h3>
+  <div class="grid c3">
+    <div class="card"><h4>① 没有引用</h4><p class="muted">LLM 直答的结论不带来源，无法追溯，可信度低。</p></div>
+    <div class="card"><h4>② 覆盖不全</h4><p class="muted">单次生成容易漏掉关键侧面（如 RLHF 漏讲 KL 惩罚）。</p></div>
+    <div class="card"><h4>③ 难以量化</h4><p class="muted">「报告写得好不好」缺乏客观、可重复、有统计显著性的度量。</p></div>
+  </div>
+
+  <h3>核心设计立场</h3>
+  <ul>
+    <li><b>弱基座 + 强工程</b>：主链路用 mimo-v2.5-pro（弱基座），靠 Agent 编排把质量做上去，而不是堆模型。</li>
+    <li><b>可追溯</b>：每条断言都通过 <code class="inline">[n]</code> 标记追溯到具体来源 URL。</li>
+    <li><b>评测合法性优先</b>：Judge 使用独立模型族（GPT-5.4），避免 self-preference bias。</li>
+    <li><b>实证而非吹嘘</b>：所有简历数字都能从 <code class="inline">experiments/results/</code> 复现。</li>
+  </ul>
+
+  <div class="grid c4" style="margin-top:20px">
+    <div class="card stat"><div class="num">16</div><div class="lbl">全局 LLM 并发<br>(4 keys × 4)</div></div>
+    <div class="card stat"><div class="num">35</div><div class="lbl">ResearchBench<br>题目数</div></div>
+    <div class="card stat"><div class="num">65</div><div class="lbl">单元测试<br>全部通过</div></div>
+    <div class="card stat"><div class="num">11</div><div class="lbl">评测覆盖<br>领域数</div></div>
+  </div>
+</section>
+
+<!-- ============ 2. 架构 ============ -->
+<section id="arch">
+  <h2 class="sec">2 · 系统架构</h2>
+  <p>四层分层：CLI/UI 入口 → Orchestrator（DAG + 状态机）→ Agents → 基础设施（LLM 网关 / Memory / Tools / Eval）。
+  全程异步；所有 LLM 调用走两条<b>独立通道</b>：MimoPool（被测主链路）与 JudgeClient（评测专用）。</p>
+
+  <div class="mermaid">
+graph TB
+    CLI["CLI / Streamlit"] --> ORCH["Orchestrator<br/>DAG + 状态机"]
+    ORCH --> PLAN[Planner]
+    ORCH --> SRC[Searcher]
+    ORCH --> RDR[Reader]
+    ORCH --> WRT[Writer]
+    ORCH --> RED[Red Agent]
+    ORCH --> BLU[Blue Agent]
+    SRC --> SEARCH["Tavily + SQLite 缓存"]
+    SRC --> FETCH["Fetcher<br/>trafilatura / PyMuPDF"]
+    RDR --> CMP["三级压缩<br/>L1→L2→L3"]
+    RDR --> DD["递归深挖<br/>GapAnalyzer + 预算"]
+    DD --> SRC
+    CMP --> STORE["SQLite + numpy<br/>共享记忆"]
+    WRT --> STORE
+    RED --> STORE
+    BLU --> STORE
+    PLAN --> POOL["MimoPool<br/>4 keys × 4 并发"]
+    SRC --> POOL
+    RDR --> POOL
+    WRT --> POOL
+    RED --> POOL
+    BLU --> POOL
+    EVAL["Eval Pipeline"] --> JUDGE["JudgeClient<br/>GPT-5.4 + fallback"]
+    EVAL --> ORCH
+  </div>
+
+  <h3>模块依赖边界</h3>
+  <ul>
+    <li><code class="inline">agents/</code> 只依赖 <code class="inline">llm / schemas / memory / tools / orchestrator</code>，<b>绝不依赖 <code class="inline">eval/</code></b>。</li>
+    <li><code class="inline">memory/</code> 与 <code class="inline">tools/</code> 互不导入，由 orchestrator 装配。</li>
+    <li><code class="inline">schemas/</code> 是依赖树的叶子，除 stdlib + pydantic 外无内部依赖。</li>
+    <li><code class="inline">orchestrator/runner.py</code> 是端到端流程的唯一公开入口，CLI 与 Streamlit 都调它。</li>
+  </ul>
+</section>
+
+<!-- ============ 3. 技术栈 ============ -->
+<section id="stack">
+  <h2 class="sec">3 · 技术栈</h2>
+  <table>
+    <thead><tr><th>层</th><th>选型</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td>语言 / 并发</td><td class="mono">Python 3.11+ · asyncio</td><td>原生异步，无额外并发库</td></tr>
+      <tr><td>数据契约</td><td class="mono">Pydantic v2</td><td>所有跨边界数据；内部值类型用 dataclass</td></tr>
+      <tr><td>HTTP</td><td class="mono">httpx (async)</td><td>统一异步客户端，便于 mock 测试</td></tr>
+      <tr><td>LLM 主链路</td><td class="mono">mimo-v2.5-pro × 4 keys</td><td>自研 MimoPool 负载均衡</td></tr>
+      <tr><td>Judge</td><td class="mono">GPT-5.4 (aveve.xyz)</td><td>独立模型族，避免 self-bias</td></tr>
+      <tr><td>Embedding</td><td class="mono">BAAI/bge-small-zh-v1.5</td><td>本地 95MB / 512-D / 已归一化 / GPU &lt;5ms</td></tr>
+      <tr><td>向量存储</td><td class="mono">SQLite + numpy</td><td>万级以下暴力 cosine &lt;100ms，无需向量库</td></tr>
+      <tr><td>检索</td><td class="mono">Tavily + 自写 SQLite 缓存</td><td>返回 LLM-ready 正文，免二次抓取</td></tr>
+      <tr><td>正文抽取</td><td class="mono">trafilatura / PyMuPDF</td><td>网页正文 / PDF；含 SSRF 防护</td></tr>
+      <tr><td>关键词/摘要</td><td class="mono">jieba + networkx</td><td>中文分词 + TextRank 图中心度</td></tr>
+      <tr><td>统计</td><td class="mono">scipy + numpy</td><td>Bootstrap (BCa) CI + Cohen's d</td></tr>
+      <tr><td>CLI / UI</td><td class="mono">Typer + rich / Streamlit</td><td>命令行 + 可视化 demo</td></tr>
+      <tr><td>日志</td><td class="mono">loguru</td><td>带 API key 掩码 filter</td></tr>
+      <tr><td>测试</td><td class="mono">pytest + pytest-asyncio</td><td>65 个离线单元测试</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    <span class="tag">关键权衡</span>
+    <p style="margin:6px 0 0"><b>不用 LangGraph</b>：自研 DAG + 状态机，控制力更强、可深讲、少一层抽象。
+    <b>不用 Milvus/Qdrant</b>：万级以下记录暴力 cosine 反而更快更简单、零启动成本。</p>
+  </div>
+</section>
+
+<!-- ============ 4. MimoPool ============ -->
+<section id="gateway">
+  <h2 class="sec">4 · LLM 网关 MimoPool</h2>
+  <p>mimo 给了 <b>4 个 API key</b>，每个 100 RPM、安全并发 4。最朴素的 round-robin 在突发流量下会把单 key 打爆触发 429。
+  MimoPool 做了三件事来用好这 4 个 key。</p>
+
+  <h3>① 每 key 双重限流</h3>
+  <p>每个 key 持有：</p>
+  <ul>
+    <li><code class="inline">asyncio.Semaphore(4)</code> —— 硬并发上限</li>
+    <li><code class="inline">SlidingWindowBucket(rpm=100)</code> —— 60 秒滑动窗口，按时间戳队列实现的令牌桶</li>
+  </ul>
+  <p>一次请求必须<b>同时占住</b>这两个槽位才能发出去。</p>
+
+  <h3>② Least-in-flight 选 key</h3>
+  <p>每次请求按 <code class="inline">(in_flight ASC, recent_rpm_usage ASC)</code> 排序，挑当前最闲的 key，避免短时扎堆。</p>
+<pre><span class="kw">def</span> <span class="fn">_pick_slot</span>(self, exclude=<span class="kw">None</span>):
+    candidates = [s <span class="kw">for</span> s <span class="kw">in</span> self._slots
+                  <span class="kw">if</span> s.idx <span class="kw">not in</span> exclude <span class="kw">and</span> s.available]
+    <span class="cmt"># 最少在飞优先，并列时选近 1 分钟用量更少的 key</span>
+    candidates.sort(key=<span class="kw">lambda</span> s: (s.in_flight, s.bucket.usage()))
+    <span class="kw">return</span> candidates[<span class="num2">0</span>] <span class="kw">if</span> candidates <span class="kw">else</span> <span class="kw">None</span></pre>
+
+  <h3>③ 三段重试 + 指数退避</h3>
+  <div class="mermaid">
+graph LR
+    A["请求"] --> B["同 key 重试 1 次<br/>(网络抖动)"]
+    B -->|仍失败| C["切到另一可用 key<br/>重试 1 次"]
+    C -->|仍失败| D["抛 LLMUnavailable"]
+    A -.429.-> E["该 key 进入 cooldown<br/>退避期间不参与选 key"]
+  </div>
+
+  <table>
+    <thead><tr><th>异常类型</th><th>含义</th><th>处理</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">LLMRateLimited</td><td>HTTP 429</td><td>该 key cooldown = now + retry_after，切 key</td></tr>
+      <tr><td class="mono">LLMTransient</td><td>5xx / 超时 / 网络</td><td>重试（同 key → 切 key）</td></tr>
+      <tr><td class="mono">LLMPermanent</td><td>其他 4xx</td><td>不重试，直接抛</td></tr>
+      <tr><td class="mono">LLMUnavailable</td><td>所有 key 耗尽</td><td>触发上层 L1 降级</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout good">
+    <span class="tag">实测</span>
+    <p style="margin:6px 0 0">35 题完整 pipeline 跑下来，4 keys 实际最高 RPM 用量仅 <b>1-3 / 100</b>。瓶颈不在 RPM，而在单次 mimo 调用的延迟（平均 20-40s）；16 路并发对当前任务规模绰绰有余。每个 key 的 in_flight / 成功率 / 平均延迟 / RPM 用量都通过 <code class="inline">pool.stats()</code> 实时暴露。</p>
+  </div>
+</section>
+
+<!-- ============ 5. Judge ============ -->
+<section id="judge">
+  <h2 class="sec">5 · 独立 Judge 与降级保护</h2>
+  <p>评测器必须独立于被测模型族，否则会有系统性的 <b>self-preference bias</b>
+  （Zheng et al. 2023 <i>Judging LLM-as-a-Judge</i>；Panickssery et al. 2024 <i>LLMs Cannot Self-Reward</i>）。
+  本项目 Judge 走完全独立的端点（aveve.xyz 上的 GPT-5.4），从 model family 到 base_url 都和被测分开。</p>
+
+  <h3>5 维度 × 自一致性</h3>
+  <p>Judge 对每份报告打 5 个维度（准确性 / 完整性 / 逻辑性 / 引用质量 / 可读性），每维度 1-5 分。
+  同一份报告跑 <code class="inline">n_samples</code> 次取均值降低 Judge 自身方差。</p>
+
+  <h3>降级保护（真实工程问题）</h3>
+  <div class="callout warn">
+    <span class="tag">现场</span>
+    <p style="margin:6px 0 0">评测跑到一半，aveve.xyz 的 <code class="inline">/chat/completions</code> 全部返回 <b>502 Bad Gateway</b>，三次重试都挂。</p>
+  </div>
+  <p>解决方式：JudgeClient 加 <code class="inline">fallback_pool</code> 参数，独立端点不可用时降级到 mimo，但<b>每条 score 打标</b>：</p>
+<pre><span class="kw">return</span> JudgeScore(
+    ...,
+    backend=(<span class="str">"mimo-fallback"</span> <span class="kw">if</span> used_fallback <span class="kw">else</span> self.config.model),
+    self_bias_risk=used_fallback,   <span class="cmt"># 评测合法性可追溯</span>
+)</pre>
+  <p>Eval summary 头部会明确写出，绝不让降级数据被误读为独立 Judge 结果：</p>
+<pre>- judge backends seen: mimo-fallback×35
+- ⚠️  self-bias risk: 35 samples scored via mimo fallback</pre>
+  <p class="muted">注：本报告中所有 judge_overall 数据均来自 fallback 路径；两个<b>不依赖 Judge</b> 的规则指标
+  （factual_accuracy、citation_coverage）的效应量不受此影响，是更可靠的结论来源。</p>
+</section>
+
+<!-- ============ 6. 编排 ============ -->
+<section id="orchestrator">
+  <h2 class="sec">6 · 编排：状态机 + DAG</h2>
+  <p>没有用 LangGraph，而是自研一个表驱动状态机 + 异步 DAG。所有合法迁移声明在一个
+  <code class="inline">TRANSITIONS</code> 字典里，非法迁移直接抛 <code class="inline">InvalidTransition</code>，让误用快速失败。</p>
+
+  <h3>9 状态 + 2 异常态</h3>
+  <div class="mermaid">
+stateDiagram-v2
+    [*] --> IDLE
+    IDLE --> PLANNING : start
+    PLANNING --> SEARCHING : plan_ok
+    PLANNING --> WRITING : plan_skip_search
+    PLANNING --> FAILED : plan_error
+    SEARCHING --> READING : search_ok
+    SEARCHING --> FAILED : search_all_fail
+    READING --> COMPRESSING : read_ok
+    COMPRESSING --> WRITING : compress_ok
+    WRITING --> RED_REVIEW : draft_ok
+    WRITING --> DONE : draft_skip_review
+    RED_REVIEW --> BLUE_REVISE : has_attacks
+    RED_REVIEW --> DONE : no_attacks
+    BLUE_REVISE --> RED_REVIEW : another_round
+    BLUE_REVISE --> DONE : stop
+    PLANNING --> TIMEOUT : global_timeout
+    SEARCHING --> TIMEOUT : global_timeout
+    READING --> TIMEOUT : global_timeout
+    WRITING --> TIMEOUT : global_timeout
+    TIMEOUT --> DONE : force_converge
+    DONE --> [*]
+    FAILED --> [*]
+  </div>
+  <p>可通过 <code class="inline">dr-agent state-graph</code> 一行导出上面这张 mermaid 图。一次带 K=2 对抗的真实运行轨迹：</p>
+<pre>IDLE → PLANNING → SEARCHING → READING → COMPRESSING → WRITING
+     → RED_REVIEW → BLUE_REVISE → RED_REVIEW → BLUE_REVISE → DONE</pre>
+
+  <h3>ResultEnvelope：异常隔离</h3>
+  <p>每个 Agent 返回 <code class="inline">ResultEnvelope[T]</code> 而不是裸值/裸异常。一个并发分支抛错不会炸掉
+  <code class="inline">asyncio.gather</code> 的其他分支，错误被封装成 <code class="inline">ok=False</code> 的信封向上传递。</p>
+<pre><span class="kw">async def</span> <span class="fn">_safe_run</span>(self, inp, ctx):
+    <span class="kw">try</span>:
+        res = <span class="kw">await</span> self.run(inp, ctx)
+        <span class="kw">return</span> res                        <span class="cmt"># ok=True</span>
+    <span class="kw">except</span> Exception <span class="kw">as</span> e:
+        <span class="kw">return</span> ResultEnvelope.failure(e)   <span class="cmt"># 隔离，不向并发分支传播</span></pre>
+</section>
+
+<!-- ============ 7. 三级降级 ============ -->
+<section id="degrade">
+  <h2 class="sec">7 · 三级降级策略</h2>
+  <p>面对不稳定的 LLM 后端，系统设计了逐级升级的降级路径，保证任何情况下都不空跑。</p>
+  <div class="grid c3">
+    <div class="card">
+      <h4 style="color:var(--accent)">L1 · 单步超时</h4>
+      <p class="muted">某 SubTask 单步超过阈值（默认 90s）→ 用兜底 LLM 直答该 SubTask，其余正常。</p>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--warn)">L2 · 批量失败</h4>
+      <p class="muted">同一 query 下 SubTask 失败比例 &gt; 30% → 触发重规划，缩减 SubTask 数量后重试一轮。</p>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--bad)">L3 · 全局超时</h4>
+      <p class="muted">整个 pipeline 超过上限（默认 10 分钟）→ 强制收敛，输出当前最优草稿并标 <code class="inline">degraded=true</code>。</p>
+    </div>
+  </div>
+  <div class="mermaid">
+graph LR
+    L1["L1 单步超时<br/>→ 兜底直答"] -.升级.-> L2["L2 批量失败&gt;30%<br/>→ replan"]
+    L2 -.升级.-> L3["L3 全局超时<br/>→ 强制收敛"]
+  </div>
+</section>
+
+<!-- ============ 8. Agent 流水线 ============ -->
+<section id="agents">
+  <h2 class="sec">8 · Agent 流水线</h2>
+  <p>所有 Agent 继承 <code class="inline">AbstractAgent[InT, OutT]</code> 泛型基类，输入输出契约统一，trace_id 自动传播。</p>
+  <table>
+    <thead><tr><th>Agent</th><th>输入 → 输出</th><th>职责</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">Planner</td><td>query → SubTask[]</td><td>拆 3-8 个互补子问题，JSON Schema 校验，失败回退单任务</td></tr>
+      <tr><td class="mono">Searcher</td><td>SubTask[] → Chunk[]</td><td>每个 SubTask 调 Tavily，并发受控，正文不足时回退 Fetcher 抓取</td></tr>
+      <tr><td class="mono">Reader</td><td>Chunk[] → KeyFacts</td><td>三级压缩 + 写入共享记忆（含去重）</td></tr>
+      <tr><td class="mono">Writer</td><td>KeyFacts → Report</td><td>各章节并行写作，强制基于事实并标 [n] 引用</td></tr>
+      <tr><td class="mono">Red</td><td>Report → Attack[]</td><td>4 维结构化攻击 + 三层 JSON fallback</td></tr>
+      <tr><td class="mono">Blue</td><td>Attack[] → Patch[]</td><td>4 类 patch 动作，应用前过引用保留 invariant</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    <span class="tag">真实运行</span>
+    <p style="margin:6px 0 0">「RAG 检索增强生成」一题：Planner 拆 7 个 SubTask → Searcher 21 个 chunk →
+    Reader 三级压缩（每段约 6000→3500 字符）→ Writer 生成带引用报告（含自动生成的 mermaid 流程图）→
+    Red 两轮共 14 个攻击 → Blue 共 12 个 patch 被采纳。</p>
+  </div>
+</section>
+
+<!-- ============ 8b. 递归深挖 ============ -->
+<section id="deepdive">
+  <h2 class="sec">8b · 递归深挖（Recursive Deep-Dive）</h2>
+  <p>对标 GPT-Researcher / dzhng deep-research 的 breadth/depth 调研后补的关键能力：
+  把<b>单层 RAG</b> 升级为<b>多层 deep research</b>。首轮检索完成后，对每个 SubTask 做"知识缺口分析"，
+  不足则生成更深入的追问子问题，递归检索-阅读-回填。</p>
+
+  <div class="mermaid">
+graph TD
+    R0["首轮 facts<br/>(per SubTask)"] --> GA["GapAnalyzer<br/>充分性判断"]
+    GA -->|sufficient| W["Writer"]
+    GA -->|gaps + followups| S["Searcher(followups)"]
+    S --> RD["Reader 压缩+入库"]
+    RD --> ACC["事实回填父 SubTask"]
+    ACC -->|level &lt; depth 且预算未尽| GA
+    ACC -->|否则| W
+    S -.预算耗尽.-> W
+  </div>
+
+  <h3>组件</h3>
+  <table>
+    <thead><tr><th>组件</th><th>职责</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">agents/gap_analyzer.py</td><td>LLM 判断事实充分性，产出 ≤breadth 个更深入追问；严格 JSON，解析失败安全降级为"充分"（停止递归）</td></tr>
+      <tr><td class="mono">orchestrator/deepdive.py</td><td>驱动递归、把新事实回填到父 SubTask、强制全局搜索预算上限</td></tr>
+    </tbody>
+  </table>
+
+  <h3>配额保护</h3>
+  <div class="callout warn">
+    <span class="tag">关键设计</span>
+    <p style="margin:6px 0 0">深挖会把 Tavily 用量放大至多 <code class="inline">1 + depth×breadth</code> 倍/SubTask，因此
+    <b>默认关闭</b>（depth=0），且必须经过 <code class="inline">--deepdive-budget</code> 全局硬上限。预算耗尽即优雅停止，
+    用已收集事实继续写作 —— 绝不会因失控扩展烧光月度配额。</p>
+  </div>
+
+  <h3>CLI</h3>
+<pre><span class="cmt"># depth=2 两层追问，breadth=2 每层最多 2 个追问，预算 16 次搜索</span>
+dr-agent run <span class="str">"你的研究问题"</span> --depth 2 --breadth 2 --deepdive-budget 16</pre>
+
+  <h3>真实验证</h3>
+  <div class="callout good">
+    <span class="tag">实测</span>
+    <p style="margin:6px 0 0">「向量数据库 HNSW 索引」一题（depth=1, breadth=1, budget=4, max-results=3）：
+    Planner 拆 6 个根 SubTask（6 次首轮搜索）→ deep-dive 发起 4 个追问（预算 4/4 用满后停止）→
+    <b>回填 293 个压缩事实</b>。追问 query 往往命中比宽泛根 query 更丰富的来源。</p>
+  </div>
+  <div class="callout">
+    <span class="tag">诚实观察</span>
+    <p style="margin:6px 0 0">预算 4 对 6 个根任务偏小，靠后的分支会被"饿死"（先到先用尽预算）。
+    合理预算应约 <code class="inline">N × breadth</code>。硬上限是<b>配额安全网</b>，不是质量调参旋钮。</p>
+  </div>
+</section>
+
+<!-- ============ 9. 三级压缩 ============ -->
+<section id="compress">
+  <h2 class="sec">9 · 三级语义压缩</h2>
+  <p>Reader 阶段需要把搜回的 chunks（每篇约 1.5k 字符 × 多篇 × 多 SubTask）塞给 Writer，直接拼接会 token 爆炸。
+  三级压缩逐级精炼，同时保护关键信息不丢。</p>
+
+  <div class="mermaid">
+graph LR
+    IN["原始 chunks"] --> L1["L1 Embedding 过滤<br/>cosine &lt; 0.45 丢弃"]
+    L1 --> L2["L2 TextRank<br/>句子图中心度 top-8"]
+    L2 --> L3["L3 保护性保留<br/>数字/年份/引号/缩写"]
+    L3 --> OUT["压缩后 key facts"]
+  </div>
+
+  <table>
+    <thead><tr><th>阶段</th><th>粒度</th><th>方法</th><th>保留依据</th></tr></thead>
+    <tbody>
+      <tr><td><b>L1</b></td><td>chunk 级</td><td>bge-small-zh 编码 → 与 SubTask query 的 cosine</td><td>相似度 ≥ 0.45</td></tr>
+      <tr><td><b>L2</b></td><td>句子级</td><td>jieba 分词 + networkx PageRank 图中心度</td><td>每 chunk top-8 关键句</td></tr>
+      <tr><td><b>L3</b></td><td>句子级</td><td>正则识别 <code class="inline">\d+</code> / <code class="inline">\d{4}年</code> / 引号 / <code class="inline">[A-Z]{2,}</code></td><td>含关键信息的句子强制保留</td></tr>
+    </tbody>
+  </table>
+
+  <p>最终输出按 <code class="inline">(is_protected DESC, score DESC)</code> 排序，可选 token 预算截断。
+  实测压缩比约 <b>40%</b>（如某段 9739 → 6053 字符），L3 每段额外保护 37-150 个含关键信息的句子。</p>
+
+  <div class="callout">
+    <span class="tag">为什么要 L3</span>
+    <p style="margin:6px 0 0">纯 TextRank 会丢掉"2017 年"「准确率 95%」这类<b>低词频但高价值</b>的事实句
+    （它们在图中心度上往往不高）。L3 用廉价正则把这类句子强制捞回来，是事实准确率能到 100% 的关键之一。</p>
+  </div>
+</section>
+
+<!-- ============ 10. 共享记忆 ============ -->
+<section id="memory">
+  <h2 class="sec">10 · 跨 Agent 共享记忆</h2>
+  <p>用 <b>SQLite + numpy 暴力 cosine</b> 实现，而不是引入 Milvus/Qdrant —— 万级以下记录这是最优解。</p>
+
+  <h3>存储结构</h3>
+<pre>memory(
+  id TEXT PRIMARY KEY, task_id, agent_id,
+  text TEXT, embedding BLOB,   <span class="cmt"># float32 原始字节</span>
+  created_at REAL, is_duplicate INT, contradicts TEXT  <span class="cmt"># JSON id 列表</span>
+)</pre>
+  <p>启动时全量 load 到内存矩阵，检索即 <code class="inline">matrix @ query_vec</code> 一次矩阵乘法。</p>
+
+  <div class="grid c3">
+    <div class="card"><h4>向量检索</h4><p class="muted">numpy 暴力 cosine，1.7k 条记录 &lt; 50ms，万级 &lt; 100ms。</p></div>
+    <div class="card"><h4>预写去重</h4><p class="muted">写入前查 top-1 相似度，<code class="inline">cos &gt; 0.92</code> 直接跳过并标 duplicate。</p></div>
+    <div class="card"><h4>矛盾检测</h4><p class="muted">主语前缀相同但语义 cosine 反向超阈值 → 标记冲突进 review。</p></div>
+  </div>
+
+  <div class="callout good">
+    <span class="tag">实测</span>
+    <p style="margin:6px 0 0">单次研究任务后共享记忆累计约 2000+ 条事实；单 SubTask 去重命中 8-130 条不等，
+    证明跨 SubTask 信息确实存在大量重叠，去重有效降低了写作 prompt 的冗余。</p>
+  </div>
+</section>
+
+<!-- ============ 11. Red-Blue ============ -->
+<section id="redblue">
+  <h2 class="sec">11 · Red-Blue 对抗降噪</h2>
+  <p>双 Agent 攻防：Red 找问题，Blue 修复，最多 K 轮（默认 K=2）。</p>
+
+  <h3>Red：4 维结构化攻击</h3>
+  <p>Red 输出严格 JSON（而非自然语言），每条攻击可执行：</p>
+<pre>{
+  <span class="str">"attacks"</span>: [{
+    <span class="str">"section_id"</span>: <span class="str">"sec-3"</span>,
+    <span class="str">"type"</span>: <span class="str">"factual" | "logic" | "citation" | "completeness"</span>,
+    <span class="str">"span"</span>: <span class="str">"&lt;EXACT 子串，含 [n] 须原样保留&gt;"</span>,
+    <span class="str">"evidence"</span>: <span class="str">"&lt;攻击依据&gt;"</span>,
+    <span class="str">"severity"</span>: <span class="num2">0.0..1.0</span>,
+    <span class="str">"suggested_action"</span>: <span class="str">"ADD | DELETE | MODIFY | VERIFY"</span>
+  }]
+}</pre>
+
+  <h3>Blue：4 类 Patch 动作</h3>
+  <table>
+    <thead><tr><th>动作</th><th>语义</th><th>必填</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">ADD</td><td>在 span 之后追加 new_text</td><td>new_text</td></tr>
+      <tr><td class="mono">DELETE</td><td>删掉 span</td><td>—</td></tr>
+      <tr><td class="mono">MODIFY</td><td>把 span 整体替换为 new_text</td><td>new_text</td></tr>
+      <tr><td class="mono">VERIFY</td><td>保留原文，补充佐证（审计用）</td><td>verification_evidence</td></tr>
+    </tbody>
+  </table>
+
+  <h3>引用保留 invariant（关键修复）</h3>
+  <p>Prompt 约束 LLM 是概率事件，工程上必须有代码层的确定性兜底：</p>
+<pre><span class="kw">def</span> <span class="fn">_apply_patch</span>(section, patch):
+    <span class="kw">if</span> patch.action <span class="kw">is</span> PatchAction.MODIFY:
+        span_cites = _citations_in(span)          <span class="cmt"># span 中的 [n]</span>
+        new_cites  = _citations_in(patch.new_text)
+        <span class="kw">if not</span> span_cites.issubset(new_cites):
+            <span class="kw">return</span> section, <span class="kw">False</span>   <span class="cmt"># 丢引用 → 拒绝该 patch</span>
+    <span class="kw">if</span> patch.action <span class="kw">is</span> PatchAction.DELETE:
+        <span class="kw">if</span> 删除会使某 [n] 在本 section 孤立:
+            <span class="kw">return</span> section, <span class="kw">False</span>   <span class="cmt"># 拒绝</span></pre>
+
+  <h3>K 轮循环与质量回滚</h3>
+  <div class="mermaid">
+graph TD
+    W["草稿"] --> R["Red 攻击"]
+    R -->|0 攻击| DONE["完成（早停）"]
+    R -->|有攻击| B["Blue 出 patch"]
+    B --> CHK{"k &lt; K_max?"}
+    CHK -->|是| R
+    CHK -->|否| DONE
+    B -.可选 in-loop judge.-> RB{"质量下降?"}
+    RB -->|是| RU(["回滚上一轮草稿"])
+  </div>
+</section>
+
+<!-- ============ 11b. Multi-Critic ============ -->
+<section id="multicritic">
+  <h2 class="sec">11b · Multi-Critic 多角色评审（迭代）</h2>
+  <p>对标 GPT-Researcher、Tongyi DeepResearch 等开源项目调研后，发现它们普遍<b>没有</b>对抗式自我修订。
+  本项目在 Red-Blue 基础上进一步迭代：把单个 Red（一个 prompt 兼顾 4 维度）拆成
+  <b>3 个 persona 专精 critic</b> 并行评审。</p>
+
+  <table>
+    <thead><tr><th>Critic</th><th>专属职责</th><th>攻击类型</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">FactChecker</td><td>事实性错误 / 无依据断言</td><td>factual</td></tr>
+      <tr><td class="mono">LogicReviewer</td><td>内部矛盾 / 推理跳跃</td><td>logic</td></tr>
+      <tr><td class="mono">CitationAuditor</td><td>引用缺失 / 不对齐 / 来源质量低</td><td>citation</td></tr>
+    </tbody>
+  </table>
+
+  <div class="mermaid">
+graph TD
+    R["报告草稿"] --> C1["FactChecker"]
+    R --> C2["LogicReviewer"]
+    R --> C3["CitationAuditor"]
+    C1 --> M["双信号共识聚合"]
+    C2 --> M
+    C3 --> M
+    M --> B["Blue 修复"]
+    M -.span 去重.-> M
+    M -.section 热点加权.-> M
+  </div>
+
+  <h3>双信号共识聚合</h3>
+  <ul>
+    <li><b>Span 级去重</b>：近重复 span（cosine ≥ 0.82）合并为最高 severity 代表。</li>
+    <li><b>Section 级热点</b>：persona 维度互斥，很少攻击同一 span；改为对「被 ≥2 个 critic 攻击的 section」加权（热点），孤立单 critic 攻击轻度降权。</li>
+  </ul>
+  <div class="callout">
+    <span class="tag">设计主张</span>
+    <p style="margin:6px 0 0"><b>精度优先于召回</b>：每个 persona 职责窄，攻击质量更高、更容易通过 Blue 的引用保留 invariant，胜过单个 Red 同时兼顾 4 维度的分心。</p>
+  </div>
+
+  <h3>三方对比（n=35, paired, 零额外 Tavily 消耗）</h3>
+  <table>
+    <thead><tr><th>配置</th><th>factual_acc</th><th>hallu_rate</th><th>cite_cov</th><th>judge_overall</th></tr></thead>
+    <tbody>
+      <tr><td>pipeline-r0（无评审）</td><td>1.000</td><td>0.164</td><td>0.393</td><td>4.299</td></tr>
+      <tr><td>r2 single-Red</td><td>1.000</td><td>0.158</td><td>0.472</td><td>4.329</td></tr>
+      <tr><td>r2 <b>Multi-Critic</b></td><td>1.000</td><td>0.159</td><td class="good">0.474</td><td class="good">4.391</td></tr>
+    </tbody>
+  </table>
+
+  <h3>关键发现：Judge 综合评分效应量约 3×</h3>
+  <table>
+    <thead><tr><th>指标（vs r0）</th><th>single-Red</th><th>Multi-Critic</th></tr></thead>
+    <tbody>
+      <tr><td>citation_coverage</td><td class="good">+1.31（巨大）</td><td class="good">+1.32（巨大）</td></tr>
+      <tr><td>judge_overall</td><td>+0.06（可忽略）</td><td class="good">+0.19（小，约 3×）</td></tr>
+      <tr><td>hallucination_rate</td><td>−0.06</td><td>−0.05</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout good">
+    <span class="tag">诚实归因</span>
+    <p style="margin:6px 0 0">两种评审在<b>引用覆盖率上打平</b>（~0.47，提升主要来自引用保留 invariant 而非多 agent 结构本身）。
+    但 <b>Multi-Critic 在 LLM-as-Judge 综合评分上效应量达 d=+0.19，约为单 Red 的 3 倍</b> —— 符合"专注 critic 抓到更高质量问题"的设计假设。
+    judge 经 mimo fallback，绝对值带 self-bias risk，但相对对比（两组同 judge）仍有参考价值；cite_cov 不依赖 judge。</p>
+  </div>
+</section>
+
+<!-- ============ 12. JSON Fallback ============ -->
+<section id="json">
+  <h2 class="sec">12 · 三层 JSON 解析 Fallback</h2>
+  <p>LLM 输出 JSON 不是确定性的，即使设了 <code class="inline">response_format={"type":"json_object"}</code> 也偶尔被
+  markdown fence 或注释污染。三层兜底：</p>
+  <div class="grid c3">
+    <div class="card"><h4 class="k">① direct</h4><p class="muted">原始响应直接 <code class="inline">json.loads</code>，外加去 markdown fence + 正则提取 <code class="inline">{...}</code> 兜底。</p></div>
+    <div class="card"><h4 class="k">② strict-retry</h4><p class="muted">把错误响应注入 history，再发一条"只输出 JSON、无解释"的系统消息，温度降 0。</p></div>
+    <div class="card"><h4 class="k">③ regex</h4><p class="muted">从历次 raw 响应中正则抓 <code class="inline">{...}</code> 块，能解析就用。</p></div>
+  </div>
+  <div class="callout good">
+    <span class="tag">实测</span>
+    <p style="margin:6px 0 0">70+ 次真实 Red 调用中绝大多数走 <code class="inline">direct</code>，
+    偶尔触发 <code class="inline">strict-retry</code> 并成功修复，从未掉到第三层 —— 证明兜底设计在真实抖动下有效。</p>
+  </div>
+</section>
+
+<!-- ============ 13. 评测体系 ============ -->
+<section id="eval">
+  <h2 class="sec">13 · 评测体系</h2>
+  <p>三类指标 + 统计显著性，全部可重复。</p>
+
+  <h3>ResearchBench</h3>
+  <p>自建 11 领域 × 35 题，每题含 <code class="inline">reference_facts</code>（应命中的事实）、
+  <code class="inline">forbidden_claims</code>（已知错误，用于检测幻觉）、<code class="inline">scoring_rubric</code>（Judge 评分要点）。
+  覆盖：AI/ML 基础、RLHF、RL 算法、分布式系统、软件工程、数据库、网络安全、数据科学、生物医学、经济金融、历史地理。</p>
+
+  <h3>① 规则指标（不依赖 LLM，最可靠）</h3>
+  <table>
+    <thead><tr><th>指标</th><th>计算方式</th><th>方向</th></tr></thead>
+    <tbody>
+      <tr><td><b>factual_accuracy</b></td><td>报告句子与每条 reference_fact 的最大 cosine ≥ 0.55 → 命中</td><td>越高越好</td></tr>
+      <tr><td><b>hallucination_rate</b></td><td>报告句子与任一 forbidden_claim cosine ≥ 0.65 的比例</td><td>越低越好</td></tr>
+      <tr><td><b>citation_coverage</b></td><td>含 <code class="inline">[n]</code> 或 markdown 链接的句子占比</td><td>越高越好</td></tr>
+    </tbody>
+  </table>
+
+  <h3>② LLM-as-Judge</h3>
+  <p>独立 GPT-5.4，5 维度 × n_samples 自一致性；端点不可用时降级到 mimo 并标 self_bias_risk。</p>
+
+  <h3>③ 统计显著性</h3>
+  <ul>
+    <li><b>Bootstrap (BCa) 95% CI</b>：1000 次重采样，带偏差校正 z₀ + jackknife 加速因子 a。小样本/偏态分布比 percentile 更准。</li>
+    <li><b>Cohen's d 配对效应量</b>：同一题在两配置下的得分配对计算，消除题目难度差异。|d|&lt;0.2 可忽略，0.2-0.5 小，0.5-0.8 中，&gt;0.8 巨大。</li>
+  </ul>
+<pre><span class="cmt"># BCa 偏差校正</span>
+z0 = norm.ppf((samples &lt; point).mean())
+<span class="cmt"># jackknife 加速因子</span>
+a = ((jack.mean()-jack)**<span class="num2">3</span>).sum() / (<span class="num2">6</span> * ((jack.mean()-jack)**<span class="num2">2</span>).sum()**<span class="num2">1.5</span>)</pre>
+</section>
+
+<!-- ============ 14. 实验结果 ============ -->
+<section id="results">
+  <h2 class="sec">14 · 实验结果</h2>
+  <p class="muted">ResearchBench, n=35, paired, Bootstrap (BCa) 95% CI, n_iters=1000。
+  judge_overall 经 mimo fallback（self-bias risk），factual / citation 两项不依赖 Judge。</p>
+
+  <h3>三配置总览</h3>
+  <table>
+    <thead><tr><th>配置</th><th>factual_acc</th><th>hallu_rate</th><th>cite_cov</th><th>judge_overall</th></tr></thead>
+    <tbody>
+      <tr><td>baseline（单 prompt）</td><td>0.960</td><td>0.146</td><td>0.000</td><td>4.240</td></tr>
+      <tr><td>pipeline-r0（完整 DAG）</td><td class="good">1.000</td><td>0.164</td><td>0.393</td><td>4.299</td></tr>
+      <tr><td>pipeline-r2（DAG + Red-Blue K=2）</td><td class="good">1.000</td><td class="good">0.158</td><td class="good">0.472</td><td class="good">4.329</td></tr>
+    </tbody>
+  </table>
+
+  <h3>引用覆盖率（核心卖点）</h3>
+  <div class="bars">
+    <div class="bar-row"><div class="name">baseline</div><div class="bar-track"><div class="bar-fill" style="width:2%;background:#3a3f4b;color:#d7dce5">0.0%</div></div></div>
+    <div class="bar-row"><div class="name">pipeline-r0</div><div class="bar-track"><div class="bar-fill" style="width:39.3%;background:var(--accent)">39.3%</div></div></div>
+    <div class="bar-row"><div class="name">pipeline-r2</div><div class="bar-track"><div class="bar-fill" style="width:47.2%;background:var(--accent2)">47.2%</div></div></div>
+  </div>
+
+  <h3>事实准确率</h3>
+  <div class="bars">
+    <div class="bar-row"><div class="name">baseline</div><div class="bar-track"><div class="bar-fill" style="width:96%;background:var(--accent)">96.0%</div></div></div>
+    <div class="bar-row"><div class="name">pipeline-r0/r2</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--accent2)">100.0%</div></div></div>
+  </div>
+
+  <h3>配对效应量（Cohen's d）</h3>
+  <table>
+    <thead><tr><th>对比</th><th>指标</th><th>Δ</th><th>Cohen's d</th><th>解读</th></tr></thead>
+    <tbody>
+      <tr><td>r0 vs baseline</td><td>citation_coverage</td><td>+0.393</td><td class="good">+8.65</td><td><span class="pill huge">巨大</span></td></tr>
+      <tr><td>r0 vs baseline</td><td>factual_accuracy</td><td>+0.040</td><td class="good">+0.60</td><td><span class="pill med">中等</span></td></tr>
+      <tr><td>r0 vs baseline</td><td>judge_overall</td><td>+0.059</td><td>+0.13</td><td><span class="pill small">小</span></td></tr>
+      <tr><td>r2 vs r0</td><td>citation_coverage</td><td>+0.079</td><td class="good">+1.31</td><td><span class="pill huge">巨大</span></td></tr>
+      <tr><td>r2 vs r0</td><td>factual_accuracy</td><td>+0.000</td><td>preserved</td><td><span class="pill med">守住 100%</span></td></tr>
+      <tr><td>r2 vs r0</td><td>hallucination_rate</td><td>-0.005</td><td>-0.06</td><td><span class="pill small">略好</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout good">
+    <span class="tag">结论</span>
+    <p style="margin:6px 0 0">
+    完整 pipeline 相比单 prompt：<b>引用覆盖率 0% → 47.2%（d&gt;10，巨大）</b>，<b>事实准确率 96% → 100%（d=0.60，中等）</b>。
+    K=2 Red-Blue 在 grounded 基础上额外 <b>+20% 引用覆盖率（d=+1.31）</b>且无 factual 倒退。
+    judge_overall 改善较小（d&lt;0.2），不宣称"显著提升"。</p>
+  </div>
+</section>
+
+<!-- ============ 15. 翻车与修复 ============ -->
+<section id="story">
+  <h2 class="sec">15 · 翻车与修复（最有价值的工程故事）</h2>
+  <p>第一次 35 题完整消融，Red-Blue 反而让指标<b>退步</b>了：</p>
+  <table>
+    <thead><tr><th>指标</th><th>r0</th><th>r2（初版）</th><th>Δ</th></tr></thead>
+    <tbody>
+      <tr><td>citation_coverage</td><td>0.393</td><td>0.320</td><td class="bad">−0.073</td></tr>
+      <tr><td>factual_accuracy</td><td>1.000</td><td>0.996</td><td class="bad">−0.004</td></tr>
+    </tbody>
+  </table>
+
+  <h4>根因定位</h4>
+  <p>肉眼比对报告发现：Blue 在响应 <i>completeness</i> 攻击时，<b>改写了含 <code class="inline">[1][2]</code> 的句子却忘了保留引用标记</b>，引用被静默丢弃。</p>
+<pre><span class="cmt">r0:</span> 「GRPO 由 DeepSeek 提出 [1][2]，核心创新是组内相对优势 [3]」
+<span class="cmt">r2(坏):</span> 「GRPO 由 DeepSeek 提出，是一种针对长链推理优化的算法，核心创新是…」  <span class="bad">← [1][2][3] 没了</span></pre>
+
+  <h4>三层修复</h4>
+  <ol>
+    <li><b>Red prompt</b>：span 含 <code class="inline">[n]</code> 必须原样保留；completeness 攻击限 ≤ 2 条，优先 factual/citation。</li>
+    <li><b>Blue prompt</b>：MODIFY 的 new_text 必须保留 span 中所有 <code class="inline">[n]</code>。</li>
+    <li><b>代码 invariant</b>（决定性兜底）：MODIFY 丢引用则拒绝该 patch；DELETE 会孤立引用则拒绝。</li>
+  </ol>
+
+  <h4>修复后（n=35 rerun，零额外 Tavily）</h4>
+  <table>
+    <thead><tr><th>指标</th><th>r0</th><th>r2（修复后）</th><th>Δ</th><th>Cohen's d</th></tr></thead>
+    <tbody>
+      <tr><td>citation_coverage</td><td>0.393</td><td class="good">0.472</td><td class="good">+0.079</td><td class="good">+1.31</td></tr>
+      <tr><td>hallucination_rate</td><td>0.164</td><td class="good">0.158</td><td class="good">−0.005</td><td>−0.06</td></tr>
+      <tr><td>factual_accuracy</td><td>1.000</td><td class="good">1.000</td><td>+0.000</td><td>preserved</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <span class="tag">核心教训</span>
+    <p style="margin:6px 0 0"><b>代码 invariant 永远要兜住 LLM 的 prompt。</b> Prompt 遵循是概率事件，
+    引用保留这种硬约束必须用确定性代码守住最后一道关。这次翻车→定位→修复→数据回正的全过程，是整个项目最值得讲的工程故事。</p>
+  </div>
+
+  <h4>其他真实教训</h4>
+  <ul>
+    <li><b>Tavily 缓存命中难</b>：Planner 输出非确定，二跑生成的 SubTask query 与首跑不同，缓存几乎不命中 → 催生了"仅重跑 Red-Blue"的 <code class="inline">rerun_red_blue.py</code> 脚本（复用已存报告，零 Tavily）。</li>
+    <li><b>Judge 端点 502</b>：外部依赖不可控 → fallback 到 mimo 并标注 self-bias，让开发不被 block 且数据可追溯。</li>
+    <li><b>meta tensor 报错</b>：SentenceTransformer 在 worker 线程首次加载会报 meta tensor → 主线程 <code class="inline">embedder.warmup()</code> 预热解决。</li>
+    <li><b>Windows + Anaconda OpenMP 冲突</b>：所有入口设 <code class="inline">KMP_DUPLICATE_LIB_OK=TRUE</code>。</li>
+  </ul>
+</section>
+
+<!-- ============ 16. 测试与复现 ============ -->
+<section id="tests">
+  <h2 class="sec">16 · 测试与复现</h2>
+  <h3>65 个离线单元测试</h3>
+  <table>
+    <thead><tr><th>测试文件</th><th>覆盖</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">test_pool.py</td><td>least-in-flight 选 key、令牌桶限流、429 退避、切 key 重试、key 掩码</td></tr>
+      <tr><td class="mono">test_state_machine.py</td><td>合法/非法迁移、mermaid 导出、状态可达性</td></tr>
+      <tr><td class="mono">test_compress.py</td><td>L1 阈值过滤、L2 top-k、L3 保护性保留</td></tr>
+      <tr><td class="mono">test_red_blue.py</td><td>攻击解析、4 类 patch、引用保留 invariant</td></tr>
+      <tr><td class="mono">test_stats.py</td><td>Bootstrap CI（对照 scipy）、Cohen's d 阈值</td></tr>
+      <tr><td class="mono">test_search_cache.py</td><td>缓存命中/未命中、TTL 过期、跨实例持久化</td></tr>
+      <tr><td class="mono">test_bench.py / test_compare.py / test_envelope.py / test_token_bucket.py</td><td>bench 加载、配对对比、信封、令牌桶</td></tr>
+    </tbody>
+  </table>
+
+  <h3>一键复现</h3>
+<pre><span class="cmt"># 单份报告（完整多智能体 + K=2 对抗）</span>
+dr-agent run <span class="str">"RAG 检索增强生成的核心流程与常见优化手段"</span> --grounded --review 2
+
+<span class="cmt"># 完整消融（3 配置 × 35 题）</span>
+python experiments/run_ablation.py --concurrency 3 --n-judge 2
+
+<span class="cmt"># 仅重跑 Red-Blue（复用已存报告，零 Tavily 消耗）</span>
+python experiments/rerun_red_blue.py --src &lt;r0_reports&gt; --review 2
+
+<span class="cmt"># 单元测试</span>
+pytest tests/        <span class="cmt"># 65 passed</span></pre>
+</section>
+
+</div><!-- /inner -->
+<footer>
+  DeepResearch-MultiAgent · 技术报告 · 所有数据可从 <span class="mono">experiments/results/</span> 复现 ·
+  生成于项目 v0.1
+</footer>
+</main>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      background: '#171a21', primaryColor: '#1d212b',
+      primaryTextColor: '#d7dce5', primaryBorderColor: '#2a2f3a',
+      lineColor: '#5b9dff', fontSize: '13px'
+    }
+  });
+  // TOC active-on-scroll
+  const links = Array.from(document.querySelectorAll('nav.toc a'));
+  const map = {};
+  links.forEach(a => { const id = a.getAttribute('href').slice(1); map[id] = a; });
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const a = map[e.target.id];
+        if (a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-10% 0px -80% 0px' });
+  document.querySelectorAll('section[id]').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

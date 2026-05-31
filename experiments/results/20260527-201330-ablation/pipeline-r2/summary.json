@@ -1,0 +1,113 @@
+{
+  "backend": "mimo",
+  "mode": "pipeline",
+  "n_samples": 35,
+  "n_failed": 0,
+  "metrics_mean": {
+    "factual_accuracy": 0.9959183673469387,
+    "hallucination_rate": 0.1558847525586321,
+    "citation_coverage": 0.3200353749684724
+  },
+  "metrics_ci95": {
+    "factual_accuracy": [
+      0.9795943779707731,
+      1.0
+    ],
+    "hallucination_rate": [
+      0.12695089297242482,
+      0.18793236025180654
+    ],
+    "citation_coverage": [
+      0.2521317247674297,
+      0.36935193560995716
+    ]
+  },
+  "judge_overall_mean": 4.284571428571429,
+  "judge_overall_ci95": [
+    4.181979458356817,
+    4.3779553045346065
+  ],
+  "by_domain": {
+    "ai-ml-fundamentals": {
+      "n": 3,
+      "factual_accuracy": 1.0,
+      "hallucination_rate": 0.1796756426632166,
+      "citation_coverage": 0.4267738682317724,
+      "judge_overall": 4.493333333333333
+    },
+    "llm-rlhf": {
+      "n": 4,
+      "factual_accuracy": 1.0,
+      "hallucination_rate": 0.09709957174150577,
+      "citation_coverage": 0.4237297046233165,
+      "judge_overall": 4.475
+    },
+    "rl-algorithms": {
+      "n": 3,
+      "factual_accuracy": 1.0,
+      "hallucination_rate": 0.09719007068404657,
+      "citation_coverage": 0.38461565769417866,
+      "judge_overall": 4.233333333333333
+    },
+    "systems-distributed": {
+      "n": 3,
+      "factual_accuracy": 1.0,
+      "hallucination_rate": 0.08980615529872922,
+      "citation_coverage": 0.40675301179116413,
+      "judge_overall": 4.386666666666667
+    },
+    "software-engineering": {
+      "n": 3,
+      "factual_accuracy": 1.0,
+      "hallucination_rate": 0.19101518842044274,
+      "citation_coverage": 0.3800069780263871,
+      "judge_overall": 4.503333333333333
+    },
+    "databases": {
+      "n": 3,
+      "factual_accuracy": 1.0,
+      "hallucination_rate": 0.17226531186101193,
+      "citation_coverage": 0.35098049736216863,
+      "judge_overall": 4.163333333333333
+    },
+    "networking-security": {
+      "n": 3,
+      "factual_accuracy": 1.0,
+      "hallucination_rate": 0.22594387266328667,
+      "citation_coverage": 0.3898920548369465,
+      "judge_overall": 4.3966666666666665
+    },
+    "data-science-stats": {
+      "n": 3,
+      "factual_accuracy": 1.0,
+      "hallucination_rate": 0.274259322379874,
+      "citation_coverage": 0.39153475528030685,
+      "judge_overall": 4.303333333333334
+    },
+    "biomedical": {
+      "n": 3,
+      "factual_accuracy": 1.0,
+      "hallucination_rate": 0.17089729263416972,
+      "citation_coverage": 0.43821627857816553,
+      "judge_overall": 4.366666666666666
+    },
+    "economics-finance": {
+      "n": 3,
+      "factual_accuracy": 1.0,
+      "hallucination_rate": 0.17982759052123212,
+      "citation_coverage": 0.0,
+      "judge_overall": 4.113333333333333
+    },
+    "history-geography": {
+      "n": 4,
+      "factual_accuracy": 0.9642857142857143,
+      "hallucination_rate": 0.081231677802018,
+      "citation_coverage": 0.0,
+      "judge_overall": 3.795
+    }
+  },
+  "judge_backends": {
+    "mimo-fallback": 35
+  },
+  "n_self_bias_risk": 35
+}

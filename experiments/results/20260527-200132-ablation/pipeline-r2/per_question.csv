@@ -1,0 +1,4 @@
+id,domain,backend,mode,factual_accuracy,hallucination_rate,citation_coverage,n_facts_total,n_facts_hit,n_sentences_total,judge_backend,judge_self_bias_risk,judge_overall,judge_accuracy,judge_completeness,judge_logic,judge_citation,judge_readability,elapsed_s,error
+rb-001,ai-ml-fundamentals,mimo,pipeline,1.0000,0.1922,0.3760,7,7,359,mimo-fallback,1,4.610,4.750,4.600,4.750,4.350,4.600,195.70,
+rb-008,rl-algorithms,mimo,pipeline,1.0000,0.0033,0.3597,6,6,303,mimo-fallback,1,4.500,4.750,4.500,4.500,4.250,4.500,272.55,
+rb-014,software-engineering,mimo,pipeline,1.0000,0.1541,0.2689,7,7,357,mimo-fallback,1,4.620,4.650,4.650,4.700,4.600,4.500,195.34,

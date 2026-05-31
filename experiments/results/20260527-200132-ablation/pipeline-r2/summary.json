@@ -1,0 +1,57 @@
+{
+  "backend": "mimo",
+  "mode": "pipeline",
+  "n_samples": 3,
+  "n_failed": 0,
+  "metrics_mean": {
+    "factual_accuracy": 1.0,
+    "hallucination_rate": 0.11652083726197578,
+    "citation_coverage": 0.3348960349558984
+  },
+  "metrics_ci95": {
+    "factual_accuracy": [
+      1.0,
+      1.0
+    ],
+    "hallucination_rate": [
+      0.0033003300330033004,
+      0.17948757961866268
+    ],
+    "citation_coverage": [
+      0.2689075630252101,
+      0.3706083700292035
+    ]
+  },
+  "judge_overall_mean": 4.576666666666667,
+  "judge_overall_ci95": [
+    4.5,
+    4.616666666666666
+  ],
+  "by_domain": {
+    "ai-ml-fundamentals": {
+      "n": 1,
+      "factual_accuracy": 1.0,
+      "hallucination_rate": 0.19220055710306408,
+      "citation_coverage": 0.37604456824512533,
+      "judge_overall": 4.609999999999999
+    },
+    "rl-algorithms": {
+      "n": 1,
+      "factual_accuracy": 1.0,
+      "hallucination_rate": 0.0033003300330033004,
+      "citation_coverage": 0.35973597359735976,
+      "judge_overall": 4.5
+    },
+    "software-engineering": {
+      "n": 1,
+      "factual_accuracy": 1.0,
+      "hallucination_rate": 0.15406162464985995,
+      "citation_coverage": 0.2689075630252101,
+      "judge_overall": 4.62
+    }
+  },
+  "judge_backends": {
+    "mimo-fallback": 3
+  },
+  "n_self_bias_risk": 3
+}
